@@ -42,6 +42,22 @@ static void EndSubroutine(CHIP8* chip8) {
     chip8->PC = StackPop(chip8);
 }
 
+static void SkipXEqual(CHIP8* chip8, uint8_t X, uint16_t NN) {
+    if (chip8->V[X] == NN) chip8->PC += 2;
+}
+
+static void SkipXNotEqual(CHIP8* chip8, uint8_t X, uint16_t NN) {
+    if (chip8->V[X] != NN) chip8->PC += 2;
+}
+
+static void SkipXYEqual(CHIP8* chip8, uint16_t X, uint16_t Y) {
+    if (chip8->V[X] == chip8->V[Y]) chip8->PC += 2;
+}
+
+static void SkipXYNotEqual(CHIP8* chip8, uint16_t X, uint16_t Y) {
+    if (chip8->V[X] != chip8->V[Y]) chip8->PC += 2;
+}
+
 static void SetRegisterVX(CHIP8* chip8, uint8_t X, uint8_t NN) {
     chip8->V[X] = NN;
 }
@@ -178,11 +194,23 @@ void RunInstruction(CHIP8* chip8) {
         case 0x2: {
             StartSubroutine(chip8, NNN);
         } return;
+        case 0x3: {
+            SkipXEqual(chip8, X, NN);
+        } return;
+        case 0x4: {
+            SkipXNotEqual(chip8, X, NN);
+        } return;
+        case 0x5: {
+            SkipXYEqual(chip8, X, Y);
+        } return;
         case 0x6: {
             SetRegisterVX(chip8, X, NN);
         } return;
         case 0x7: {
             AddToRegisterVX(chip8, X, NN);
+        } return;
+        case 0x9: {
+            SkipXYNotEqual(chip8, X, Y);
         } return;
         case 0xA: {
             SetIndexRegister(chip8, NNN);
