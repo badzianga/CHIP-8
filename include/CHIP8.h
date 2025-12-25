@@ -30,6 +30,7 @@ typedef struct CHIP8 {
 
 CHIP8* CreateCHIP8();
 void DestroyCHIP8(CHIP8* chip8);
+void LoadProgram(CHIP8* chip8, const char* filename);
 void RunInstruction(CHIP8* chip8);
 
 #ifdef __cplusplus

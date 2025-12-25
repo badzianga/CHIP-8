@@ -112,6 +112,29 @@ void DestroyCHIP8(CHIP8* chip8) {
     free(chip8);
 }
 
+void LoadProgram(CHIP8* chip8, const char* filename) {
+    FILE* file = fopen(filename, "rb");
+    if (file == NULL) {
+        fprintf(stderr, "[ERROR] Failed to open file: %s\n", filename);
+        exit(1);
+    }
+
+    const size_t bytesRead = fread(
+        &chip8->memory[PROGRAM_ADDR],
+        sizeof(uint8_t),
+        MEMORY_SIZE - PROGRAM_ADDR,
+        file
+    );
+
+    if (bytesRead == 0 && ferror(file)) {
+        fprintf(stderr, "[ERROR] Failed to read file");
+        fclose(file);
+        exit(1);
+    }
+
+    fclose(file);
+}
+
 void RunInstruction(CHIP8* chip8) {
     chip8->displayUpdated = false;
 

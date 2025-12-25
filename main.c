@@ -45,27 +45,7 @@ int main(void) {
     SDL_Event event;
 
     CHIP8* chip8 = CreateCHIP8();
-
-    FILE* file = fopen("../IBM Logo.ch8", "rb");
-    if (file == NULL) {
-        fprintf(stderr, "[ERROR] Failed to open file");
-        return 1;
-    }
-
-    const size_t bytesRead = fread(
-        &chip8->memory[PROGRAM_ADDR],
-        sizeof(uint8_t),
-        MEMORY_SIZE - PROGRAM_ADDR,
-        file
-    );
-
-    if (bytesRead == 0 && ferror(file)) {
-        fprintf(stderr, "[ERROR] Failed to read file");
-        fclose(file);
-        return 1;
-    }
-
-    fclose(file);
+    LoadProgram(chip8, "../IBM Logo.ch8");
 
     while (running) {
         while (SDL_PollEvent(&event)) {
