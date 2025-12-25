@@ -33,6 +33,15 @@ static void Jump(CHIP8* chip8, uint16_t NNN) {
     chip8->PC = NNN;
 }
 
+static void StartSubroutine(CHIP8* chip8, uint16_t NNN) {
+    StackPush(chip8, chip8->PC);
+    chip8->PC = NNN;
+}
+
+static void EndSubroutine(CHIP8* chip8) {
+    chip8->PC = StackPop(chip8);
+}
+
 static void SetRegisterVX(CHIP8* chip8, uint8_t X, uint8_t NN) {
     chip8->V[X] = NN;
 }
@@ -158,9 +167,16 @@ void RunInstruction(CHIP8* chip8) {
                 ClearScreen(chip8);
                 return;
             }
+            if (opcode == 0x00EE) {
+                EndSubroutine(chip8);
+                return;
+            }
         } break;
         case 0x1: {
             Jump(chip8, NNN);
+        } return;
+        case 0x2: {
+            StartSubroutine(chip8, NNN);
         } return;
         case 0x6: {
             SetRegisterVX(chip8, X, NN);
