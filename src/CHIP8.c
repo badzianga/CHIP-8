@@ -4,6 +4,24 @@
 
 #include "CHIP8.h"
 
+// STACK OPERATIONS ----------------------------------------------------------------------------------------------------
+
+static void StackPush(CHIP8* chip8, uint16_t value) {
+    if (chip8->SP == STACK_SIZE - 1) {
+        fprintf(stderr, "[ERROR] Stack overflow\n");
+        exit(1);
+    }
+    chip8->stack[chip8->SP++] = value;
+}
+
+static uint16_t StackPop(CHIP8* chip8) {
+    if (chip8->SP == 0) {
+        fprintf(stderr, "[ERROR] Stack underflow\n");
+        exit(1);
+    }
+    return chip8->stack[--chip8->SP];
+}
+
 // INSTRUCTIONS --------------------------------------------------------------------------------------------------------
 
 static void ClearScreen(CHIP8* chip8) {
@@ -50,24 +68,6 @@ static void Draw(CHIP8* chip8, uint8_t X, uint8_t Y, uint8_t N) {
         if (++yPos >= DISPLAY_HEIGHT) break;
     }
     chip8->displayUpdated = true;
-}
-
-// STACK OPERATIONS ----------------------------------------------------------------------------------------------------
-
-static void StackPush(CHIP8* chip8, uint16_t value) {
-    if (chip8->SP == STACK_SIZE - 1) {
-        fprintf(stderr, "[ERROR] Stack overflow\n");
-        exit(1);
-    }
-    chip8->stack[chip8->SP++] = value;
-}
-
-static uint16_t StackPop(CHIP8* chip8) {
-    if (chip8->SP == 0) {
-        fprintf(stderr, "[ERROR] Stack underflow\n");
-        exit(1);
-    }
-    return chip8->stack[--chip8->SP];
 }
 
 // CHIP-8 --------------------------------------------------------------------------------------------------------------
