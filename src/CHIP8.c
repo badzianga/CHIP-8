@@ -103,8 +103,6 @@ CHIP8* CreateCHIP8() {
 
     InitFont(chip8);
 
-    chip8->PC = PROGRAM_ADDR;
-
     return chip8;
 }
 
@@ -133,6 +131,8 @@ void LoadProgram(CHIP8* chip8, const char* filename) {
     }
 
     fclose(file);
+
+    chip8->PC = PROGRAM_ADDR;
 }
 
 void RunInstruction(CHIP8* chip8) {
