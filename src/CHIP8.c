@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <time.h>
 #include "CHIP8.h"
 
 // STACK OPERATIONS ----------------------------------------------------------------------------------------------------
@@ -173,6 +173,28 @@ static void AddToIndex(CHIP8* chip8, uint8_t X) {
     chip8->I = value & 0xFFF;
 }
 
+static void FontCharacter(CHIP8* chip8, uint8_t X) {
+    chip8->I = FONT_ADDR + chip8->V[X] * 5;
+}
+
+static void BinaryCodedDecimalConversion(CHIP8* chip8, uint8_t X) {
+    int value = chip8->V[X];
+    for (int i = 3; i > 0; --i) {
+        chip8->memory[chip8->I + i - 1] = value % 10;
+        value /= 10;
+    }
+}
+
+static void GetKey(CHIP8* chip8, uint8_t X) {
+    for (int key = 0; key < 16; ++key) {
+        if (chip8->keys[key]) {
+            chip8->V[X] = key;
+            return;
+        }
+    }
+    chip8->PC -= 2;
+}
+
 static void StoreMemory(CHIP8* chip8, uint8_t X) {
     memcpy(chip8->memory + chip8->I, chip8->V, X + 1);
 }
@@ -212,6 +234,7 @@ CHIP8* CreateCHIP8() {
         exit(1);
     }
 
+    srand(time(nullptr));
     InitFont(chip8);
 
     return chip8;
@@ -360,6 +383,9 @@ void RunInstruction(CHIP8* chip8) {
                 case 0x07: {
                     SetVXFromDelayTimer(chip8, X);
                 } return;
+                case 0x0A: {
+                    GetKey(chip8, X);
+                } return;
                 case 0x15: {
                     SetDelayTimer(chip8, X);
                 } return;
@@ -368,6 +394,12 @@ void RunInstruction(CHIP8* chip8) {
                 } return;
                 case 0x1E: {
                     AddToIndex(chip8, X);
+                } return;
+                case 0x29: {
+                    FontCharacter(chip8, X);
+                } return;
+                case 0x33: {
+                    BinaryCodedDecimalConversion(chip8, X);
                 } return;
                 case 0x55: {
                     StoreMemory(chip8, X);
