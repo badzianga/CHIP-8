@@ -18,10 +18,9 @@ int main(void) {
     InitDisplay();
 
     CHIP8* chip8 = CreateCHIP8();
-    LoadProgram(chip8, "../IBM Logo.ch8");
+    LoadProgram(chip8, "../roms/IBM Logo.ch8");
 
     bool running = true;
-    SDL_Event event;
 
     while (running) {
         running = HandleEvents(chip8);
