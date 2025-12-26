@@ -11,6 +11,7 @@ static SDL_Renderer* renderer = nullptr;
 
 static void InitDisplay();
 static void DestroyDisplay();
+static bool HandleEvents(CHIP8* chip8);
 static void UpdateDisplay(const CHIP8* chip8);
 
 int main(void) {
@@ -23,11 +24,7 @@ int main(void) {
     SDL_Event event;
 
     while (running) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = false;
-            }
-        }
+        running = HandleEvents(chip8);
 
         RunInstruction(chip8);
 
@@ -81,6 +78,59 @@ static void DestroyDisplay() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+static bool HandleEvents(CHIP8* chip8) {
+    static SDL_Event event;
+    bool running = true;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            running = false;
+        }
+        else if (event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.scancode) {
+                case SDL_SCANCODE_1: chip8->keys[ 0] = true; break;
+                case SDL_SCANCODE_2: chip8->keys[ 1] = true; break;
+                case SDL_SCANCODE_3: chip8->keys[ 2] = true; break;
+                case SDL_SCANCODE_4: chip8->keys[ 3] = true; break;
+                case SDL_SCANCODE_Q: chip8->keys[ 4] = true; break;
+                case SDL_SCANCODE_W: chip8->keys[ 5] = true; break;
+                case SDL_SCANCODE_E: chip8->keys[ 6] = true; break;
+                case SDL_SCANCODE_R: chip8->keys[ 7] = true; break;
+                case SDL_SCANCODE_A: chip8->keys[ 8] = true; break;
+                case SDL_SCANCODE_S: chip8->keys[ 9] = true; break;
+                case SDL_SCANCODE_D: chip8->keys[10] = true; break;
+                case SDL_SCANCODE_F: chip8->keys[11] = true; break;
+                case SDL_SCANCODE_Z: chip8->keys[12] = true; break;
+                case SDL_SCANCODE_X: chip8->keys[13] = true; break;
+                case SDL_SCANCODE_C: chip8->keys[14] = true; break;
+                case SDL_SCANCODE_V: chip8->keys[15] = true; break;
+                default: break;
+            }
+        }
+        else if (event.type == SDL_KEYUP) {
+            switch (event.key.keysym.scancode) {
+                case SDL_SCANCODE_1: chip8->keys[ 0] = false; break;
+                case SDL_SCANCODE_2: chip8->keys[ 1] = false; break;
+                case SDL_SCANCODE_3: chip8->keys[ 2] = false; break;
+                case SDL_SCANCODE_4: chip8->keys[ 3] = false; break;
+                case SDL_SCANCODE_Q: chip8->keys[ 4] = false; break;
+                case SDL_SCANCODE_W: chip8->keys[ 5] = false; break;
+                case SDL_SCANCODE_E: chip8->keys[ 6] = false; break;
+                case SDL_SCANCODE_R: chip8->keys[ 7] = false; break;
+                case SDL_SCANCODE_A: chip8->keys[ 8] = false; break;
+                case SDL_SCANCODE_S: chip8->keys[ 9] = false; break;
+                case SDL_SCANCODE_D: chip8->keys[10] = false; break;
+                case SDL_SCANCODE_F: chip8->keys[11] = false; break;
+                case SDL_SCANCODE_Z: chip8->keys[12] = false; break;
+                case SDL_SCANCODE_X: chip8->keys[13] = false; break;
+                case SDL_SCANCODE_C: chip8->keys[14] = false; break;
+                case SDL_SCANCODE_V: chip8->keys[15] = false; break;
+                default: break;
+            }
+        }
+    }
+    return running;
 }
 
 static void UpdateDisplay(const CHIP8* chip8) {
