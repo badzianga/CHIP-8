@@ -162,21 +162,11 @@ static void AddToIndex(CHIP8* chip8, uint8_t X) {
 }
 
 static void StoreMemory(CHIP8* chip8, uint8_t X) {
-    if (X == 0) {
-        chip8->memory[chip8->I] = chip8->V[0x0];
-    }
-    else {
-        memcpy(chip8->memory + chip8->I, chip8->V, X + 1);
-    }
+    memcpy(chip8->memory + chip8->I, chip8->V, X + 1);
 }
 
 static void LoadMemory(CHIP8* chip8, uint8_t X) {
-    if (X == 0) {
-        chip8->V[0x0] = chip8->memory[chip8->I];
-    }
-    else {
-        memcpy(chip8->V, chip8->memory + chip8->I, X + 1);
-    }
+    memcpy(chip8->V, chip8->memory + chip8->I, X + 1);
 }
 
 // CHIP-8 --------------------------------------------------------------------------------------------------------------
