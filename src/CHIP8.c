@@ -101,13 +101,13 @@ static void SubWithCarryYX(CHIP8* chip8, uint8_t X, uint8_t Y) {
 }
 
 void ShiftRight(CHIP8* chip8, uint8_t X, uint8_t Y) {
-    chip8->V[X] = chip8->V[Y] << 1;
-    chip8->V[0xF] = chip8->V[Y] >> 7;
+    chip8->V[X] = chip8->V[Y] >> 1;
+    chip8->V[0xF] = chip8->V[Y] & 0x1;
 }
 
 void ShiftLeft(CHIP8* chip8, uint8_t X, uint8_t Y) {
-    chip8->V[X] = chip8->V[Y] >> 1;
-    chip8->V[0xF] = chip8->V[Y] & 0x1;
+    chip8->V[X] = chip8->V[Y] << 1;
+    chip8->V[0xF] = chip8->V[Y] >> 7;
 }
 
 static void SetIndexRegister(CHIP8* chip8, uint16_t NNN) {
