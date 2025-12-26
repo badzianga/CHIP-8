@@ -155,6 +155,30 @@ static void SkipIfKeyUp(CHIP8* chip8, uint8_t X) {
     if (!chip8->keys[chip8->V[X]]) chip8->PC += 2;
 }
 
+static void AddToIndex(CHIP8* chip8, uint8_t X) {
+    const uint16_t value = chip8->I + chip8->V[X];
+    if (value > 0xFFF) chip8->V[0xF] = 1;
+    chip8->I = value & 0xFFF;
+}
+
+static void StoreMemory(CHIP8* chip8, uint8_t X) {
+    if (X == 0) {
+        chip8->memory[chip8->I] = chip8->V[0x0];
+    }
+    else {
+        memcpy(chip8->memory + chip8->I, chip8->V, X + 1);
+    }
+}
+
+static void LoadMemory(CHIP8* chip8, uint8_t X) {
+    if (X == 0) {
+        chip8->V[0x0] = chip8->memory[chip8->I];
+    }
+    else {
+        memcpy(chip8->V, chip8->memory + chip8->I, X + 1);
+    }
+}
+
 // CHIP-8 --------------------------------------------------------------------------------------------------------------
 
 static void InitFont(CHIP8* chip8) {
@@ -324,6 +348,20 @@ void RunInstruction(CHIP8* chip8) {
             if (NN == 0xA1) {
                 SkipIfKeyUp(chip8, X);
                 return;
+            }
+        }
+        case 0xF: {
+            switch (NN) {
+                case 0x1E: {
+                    AddToIndex(chip8, X);
+                } return;
+                case 0x55: {
+                    StoreMemory(chip8, X);
+                } return;
+                case 0x65: {
+                    LoadMemory(chip8, X);
+                } return;
+                default: break;
             }
         }
         default: break;
