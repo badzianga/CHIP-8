@@ -155,6 +155,18 @@ static void SkipIfKeyUp(CHIP8* chip8, uint8_t X) {
     if (!chip8->keys[chip8->V[X]]) chip8->PC += 2;
 }
 
+static void SetVXFromDelayTimer(CHIP8* chip8, uint8_t X) {
+    chip8->V[X] = chip8->delayTimer;
+}
+
+static void SetDelayTimer(CHIP8* chip8, uint8_t X) {
+    chip8->delayTimer = chip8->V[X];
+}
+
+static void SetSoundTimer(CHIP8* chip8, uint8_t X) {
+    chip8->soundTimer = chip8->V[X];
+}
+
 static void AddToIndex(CHIP8* chip8, uint8_t X) {
     const uint16_t value = chip8->I + chip8->V[X];
     if (value > 0xFFF) chip8->V[0xF] = 1;
@@ -236,6 +248,9 @@ void LoadProgram(CHIP8* chip8, const char* filename) {
 
 void RunInstruction(CHIP8* chip8) {
     chip8->displayUpdated = false;
+
+    if (chip8->delayTimer > 0) --chip8->delayTimer;
+    if (chip8->soundTimer > 0) --chip8->soundTimer;
 
     // fetch
     const uint8_t hi = chip8->memory[chip8->PC++];
@@ -342,6 +357,15 @@ void RunInstruction(CHIP8* chip8) {
         }
         case 0xF: {
             switch (NN) {
+                case 0x07: {
+                    SetVXFromDelayTimer(chip8, X);
+                } return;
+                case 0x15: {
+                    SetDelayTimer(chip8, X);
+                } return;
+                case 0x18: {
+                    SetSoundTimer(chip8, X);
+                } return;
                 case 0x1E: {
                     AddToIndex(chip8, X);
                 } return;
