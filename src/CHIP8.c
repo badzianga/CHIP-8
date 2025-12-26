@@ -66,6 +66,50 @@ static void AddToRegisterVX(CHIP8* chip8, uint8_t X, uint8_t NN) {
     chip8->V[X] += NN;
 }
 
+static void SetVXToVY(CHIP8* chip8, uint8_t X, uint8_t Y) {
+    chip8->V[X] = chip8->V[Y];
+}
+
+static void BinaryOR(CHIP8* chip8, uint8_t X, uint8_t Y) {
+    chip8->V[X] |= chip8->V[Y];
+}
+
+static void BinaryAND(CHIP8* chip8, uint8_t X, uint8_t Y) {
+    chip8->V[X] &= chip8->V[Y];
+}
+
+static void BinaryXOR(CHIP8* chip8, uint8_t X, uint8_t Y) {
+    chip8->V[X] ^= chip8->V[Y];
+}
+
+static void AddWithCarry(CHIP8* chip8, uint8_t X, uint8_t Y) {
+    const uint16_t sum = chip8->V[X] + chip8->V[Y];
+    if (sum > 255) chip8->V[0xF] = 1;
+    chip8->V[X] = (uint8_t)sum;
+}
+
+static void SubWithCarryXY(CHIP8* chip8, uint8_t X, uint8_t Y) {
+    if (chip8->V[X] > chip8->V[Y]) chip8->V[0xF] = 1;
+    else if (chip8->V[X] < chip8->V[Y]) chip8->V[0xF] = 0;
+    chip8->V[X] -= chip8->V[Y];
+}
+
+static void SubWithCarryYX(CHIP8* chip8, uint8_t X, uint8_t Y) {
+    if (chip8->V[Y] > chip8->V[X]) chip8->V[0xF] = 1;
+    else if (chip8->V[X] < chip8->V[Y]) chip8->V[0xF] = 0;
+    chip8->V[X] = chip8->V[Y] - chip8->V[X];
+}
+
+void ShiftRight(CHIP8* chip8, uint8_t X, uint8_t Y) {
+    chip8->V[X] = chip8->V[Y] << 1;
+    chip8->V[0xF] = chip8->V[Y] >> 7;
+}
+
+void ShiftLeft(CHIP8* chip8, uint8_t X, uint8_t Y) {
+    chip8->V[X] = chip8->V[Y] >> 1;
+    chip8->V[0xF] = chip8->V[Y] & 0x1;
+}
+
 static void SetIndexRegister(CHIP8* chip8, uint16_t NNN) {
     chip8->I = NNN;
 }
@@ -209,6 +253,38 @@ void RunInstruction(CHIP8* chip8) {
         case 0x7: {
             AddToRegisterVX(chip8, X, NN);
         } return;
+        case 0x8: {
+            switch (N) {
+                case 0x0: {
+                    SetVXToVY(chip8, X, Y);
+                } return;
+                case 0x1: {
+                    BinaryOR(chip8, X, Y);
+                } return;
+                case 0x2: {
+                    BinaryAND(chip8, X, Y);
+                } return;
+                case 0x3: {
+                    BinaryXOR(chip8, X, Y);
+                } return;
+                case 0x4: {
+                    AddWithCarry(chip8, X, Y);
+                } return;
+                case 0x5: {
+                    SubWithCarryXY(chip8, X, Y);
+                } return;
+                case 0x6: {
+                    ShiftRight(chip8, X, Y);
+                } return;
+                case 0x7: {
+                    SubWithCarryYX(chip8, X, Y);
+                } return;
+                case 0xE: {
+                    ShiftLeft(chip8, X, Y);
+                } return;
+                default: break;
+            }
+        }
         case 0x9: {
             SkipXYNotEqual(chip8, X, Y);
         } return;
