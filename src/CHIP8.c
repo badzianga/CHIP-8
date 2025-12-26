@@ -114,6 +114,14 @@ static void SetIndexRegister(CHIP8* chip8, uint16_t NNN) {
     chip8->I = NNN;
 }
 
+static void JumpWithOffset(CHIP8* chip8, uint16_t NNN) {
+    chip8->PC = NNN + chip8->V[0x0];
+}
+
+static void Random(CHIP8* chip8, uint8_t X, uint8_t NN) {
+    chip8->V[X] = (uint8_t)(rand() & NN);
+}
+
 static void Draw(CHIP8* chip8, uint8_t X, uint8_t Y, uint8_t N) {
     const uint8_t* sprite = chip8->memory + chip8->I;
     const uint8_t xStart = chip8->V[X] & 63;
@@ -137,6 +145,14 @@ static void Draw(CHIP8* chip8, uint8_t X, uint8_t Y, uint8_t N) {
         if (++yPos >= DISPLAY_HEIGHT) break;
     }
     chip8->displayUpdated = true;
+}
+
+static void SkipIfKeyDown(CHIP8* chip8, uint8_t X) {
+    if (chip8->keys[chip8->V[X]]) chip8->PC += 2;
+}
+
+static void SkipIfKeyUp(CHIP8* chip8, uint8_t X) {
+    if (!chip8->keys[chip8->V[X]]) chip8->PC += 2;
 }
 
 // CHIP-8 --------------------------------------------------------------------------------------------------------------
@@ -291,10 +307,27 @@ void RunInstruction(CHIP8* chip8) {
         case 0xA: {
             SetIndexRegister(chip8, NNN);
         } return;
+        case 0xB: {
+            JumpWithOffset(chip8, NNN);
+        } return;
+        case 0xC: {
+            Random(chip8, X, NN);
+        } return;
         case 0xD: {
             Draw(chip8, X, Y, N);
         } return;
+        case 0xE: {
+            if (NN == 0x9E) {
+                SkipIfKeyDown(chip8, X);
+                return;
+            }
+            if (NN == 0xA1) {
+                SkipIfKeyUp(chip8, X);
+                return;
+            }
+        }
         default: break;
+
     }
 
     fprintf(stderr, "[ERROR] Unknown instruction: 0x%X\n", opcode);

@@ -18,6 +18,7 @@ extern "C" {
 typedef struct CHIP8 {
     uint8_t memory[MEMORY_SIZE];
     bool display[DISPLAY_WIDTH * DISPLAY_HEIGHT];
+    bool keys[16];
     uint16_t PC;
     uint16_t I;
     uint16_t stack[16];
