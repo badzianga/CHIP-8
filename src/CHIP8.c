@@ -138,7 +138,7 @@ static void Draw(CHIP8* chip8, uint8_t X, uint8_t Y, uint8_t N) {
                 if (*screenPixel) {
                     chip8->V[0xF] = 1;
                 }
-                *screenPixel ^= 0xFF;
+                *screenPixel = !*screenPixel;
             }
             if (++xPos >= DISPLAY_WIDTH) break;
         }
