@@ -14,11 +14,17 @@ static void DestroyDisplay();
 static bool HandleEvents(CHIP8* chip8);
 static void UpdateDisplay(const CHIP8* chip8);
 
-int main(void) {
+int main(int argc, char** argv) {
+    if (argc != 2) {
+        printf("Usage: %s <ROM file>\n", argv[0]);
+        exit(1);
+    }
+    const char* romPath = argv[1];
+
     InitDisplay();
 
     CHIP8* chip8 = CreateCHIP8();
-    LoadProgram(chip8, "../roms/IBM Logo.ch8");
+    LoadProgram(chip8, romPath);
 
     bool running = true;
 
